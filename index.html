@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neovim Keymap Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --bg4: #22272e;
+    --border: #30363d;
+    --border2: #3d444d;
+    --text: #e6edf3;
+    --text2: #8d96a0;
+    --text3: #545d68;
+    --accent: #58a6ff;
+    --accent2: #1f6feb;
+    --green: #3fb950;
+    --green-bg: #0d2119;
+    --green-text: #3fb950;
+    --amber: #d29922;
+    --amber-bg: #1f1a0e;
+    --amber-text: #d29922;
+    --red: #f85149;
+    --red-bg: #1c0f0f;
+    --red-text: #f85149;
+    --purple: #bc8cff;
+    --purple-bg: #1a0f2e;
+    --purple-text: #bc8cff;
+    --teal: #39d353;
+    --teal-bg: #0d2119;
+    --blue-bg: #0c1f3d;
+    --blue-text: #58a6ff;
+    --pink: #ff7b72;
+    --pink-bg: #1e0e0c;
+    --pink-text: #ff7b72;
+    --coral: #ffa657;
+    --coral-bg: #1e1208;
+    --coral-text: #ffa657;
+    --gray-bg: #161b22;
+    --gray-text: #8d96a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .logo {
+    width: 32px; height: 32px;
+    background: var(--accent2);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  /* CONTROLS */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 7px 10px 7px 30px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--text3); }
+
+  select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 7px 28px 7px 10px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23545d68'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.15s;
+  }
+  select:focus, select:hover { border-color: var(--border2); }
+
+  .stats-bar {
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .stats-bar span { color: var(--accent); }
+
+  /* LAYOUT */
+  .layout {
+    display: flex;
+    height: calc(100vh - 120px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 180px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 14px 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text2);
+    border-left: 2px solid transparent;
+    transition: all 0.1s;
+    gap: 6px;
+  }
+
+  .sidebar-item:hover { background: var(--bg3); color: var(--text); }
+  .sidebar-item.active {
+    background: var(--blue-bg);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .sidebar-count {
+    font-size: 10px;
+    background: var(--bg4);
+    color: var(--text3);
+    border-radius: 10px;
+    padding: 1px 6px;
+    min-width: 22px;
+    text-align: center;
+  }
+  .sidebar-item.active .sidebar-count {
+    background: var(--accent2);
+    color: #fff;
+  }
+
+  /* MAIN TABLE */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  thead th {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 9px 14px;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  thead th:hover { color: var(--text2); }
+  thead th.sorted { color: var(--accent); }
+  thead th .arr { margin-left: 4px; opacity: 0.5; font-size: 9px; }
+  thead th.sorted .arr { opacity: 1; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.08s;
+  }
+  tbody tr:hover { background: var(--bg2); }
+
+  td {
+    padding: 8px 14px;
+    vertical-align: middle;
+  }
+
+  /* KEY CHIP */
+  .key {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 2px 8px;
+    color: var(--coral);
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+
+  .desc { color: var(--text); font-size: 12px; max-width: 340px; }
+  .desc em { color: var(--text3); font-style: normal; font-size: 11px; }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+
+  .cat-builtin     { background:#1a2030; color:#58a6ff; border:1px solid #1f3a6e; }
+  .cat-motion      { background:#1a2030; color:#79c0ff; border:1px solid #1f3a6e; }
+  .cat-text        { background:#0d1f1f; color:#39d353; border:1px solid #0d3318; }
+  .cat-window      { background:#1a1f30; color:#bc8cff; border:1px solid #3a2060; }
+  .cat-buffer      { background:#1a200d; color:#a5d651; border:1px solid #2d4a10; }
+  .cat-search      { background:#1f1a08; color:#d29922; border:1px solid #4a3a0a; }
+  .cat-lsp         { background:#1a0f2e; color:#bc8cff; border:1px solid #4a2a80; }
+  .cat-telescope   { background:#1f1208; color:#ffa657; border:1px solid #5a3010; }
+  .cat-neotree     { background:#1c0f0f; color:#f85149; border:1px solid #5a1a18; }
+  .cat-git         { background:#1a1208; color:#d29922; border:1px solid #5a3f00; }
+  .cat-completion  { background:#0d1f1f; color:#3fb950; border:1px solid #0d4020; }
+  .cat-comment     { background:#181218; color:#ff7b72; border:1px solid #501a18; }
+  .cat-tab         { background:#12181f; color:#79c0ff; border:1px solid #0c3050; }
+  .cat-diagnostic  { background:#1c0f0f; color:#f85149; border:1px solid #601010; }
+  .cat-insert      { background:#1a1f0f; color:#a5d651; border:1px solid #304010; }
+  .cat-misc        { background:#181818; color:#8d96a0; border:1px solid #30363d; }
+  .cat-fold        { background:#1f1510; color:#ffa657; border:1px solid #5a3500; }
+  .cat-marks       { background:#1a0a1a; color:#f0883e; border:1px solid #50206a; }
+  .cat-register    { background:#0f1a1f; color:#56d364; border:1px solid #1a4020; }
+  .cat-macro       { background:#1a1010; color:#ff7b72; border:1px solid #501a0a; }
+  .cat-cmdline     { background:#101a10; color:#3fb950; border:1px solid #1a4010; }
+  .cat-spell       { background:#1a1a0a; color:#d2a022; border:1px solid #5a4a00; }
+
+  /* MODE PILL */
+  .mode {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+  }
+  .mode-n   { background:#172030; color:#58a6ff; }
+  .mode-v   { background:#0d2119; color:#3fb950; }
+  .mode-i   { background:#1e1208; color:#ffa657; }
+  .mode-c   { background:#1a0f2e; color:#bc8cff; }
+  .mode-nv  { background:#1a1f30; color:#79c0ff; }
+  .mode-ni  { background:#1c1410; color:#f0883e; }
+  .mode-x   { background:#1a0a1a; color:#f0883e; }
+
+  /* FREQUENCY */
+  .freq {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .freq-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .freq-essential { color:#3fb950; }
+  .freq-essential .freq-dot { background:#3fb950; box-shadow:0 0 5px #3fb95066; }
+  .freq-high { color:#d29922; }
+  .freq-high .freq-dot { background:#d29922; }
+  .freq-medium { color:#8d96a0; }
+  .freq-medium .freq-dot { background:#8d96a0; }
+  .freq-low { color:#545d68; }
+  .freq-low .freq-dot { background:#545d68; }
+
+  /* SOURCE */
+  .source-custom { color:#bc8cff; font-size:11px; }
+  .source-builtin { color:#545d68; font-size:11px; }
+  .source-plugin { color:#ffa657; font-size:11px; }
+
+  /* SECTION ROWS */
+  .section-row td {
+    background: var(--bg3);
+    color: var(--text3);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 5px 14px;
+    border-top: 1px solid var(--border2);
+  }
+
+  /* EMPTY */
+  .empty {
+    text-align: center;
+    color: var(--text3);
+    padding: 60px 20px;
+    font-size: 13px;
+  }
+  .empty .em-icon { font-size: 32px; margin-bottom: 10px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 0 4px;
+    margin-left: auto;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10px; color: var(--text3);
+  }
+  .legend-dot { width:7px; height:7px; border-radius:50%; }
+
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+    .layout { height: auto; flex-direction: column; }
+    .main { overflow-x: auto; }
+    .legend { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">N</div>
+    <h1>Neovim Keymap Reference</h1>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div>Essential</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d29922"></div>High</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8d96a0"></div>Medium</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#545d68"></div>Low</div>
+    </div>
+    <div class="subtitle" id="statCount">Loading…</div>
+  </div>
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search key, description…" oninput="render()">
+    </div>
+    <select id="modeFilter" onchange="render()">
+      <option value="">All modes</option>
+      <option value="n">Normal (n)</option>
+      <option value="v">Visual (v)</option>
+      <option value="i">Insert (i)</option>
+      <option value="c">Command (c)</option>
+      <option value="x">Visual-only (x)</option>
+      <option value="nv">Normal+Visual</option>
+    </select>
+    <select id="freqFilter" onchange="render()">
+      <option value="">All frequency</option>
+      <option value="Essential">Essential</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <select id="srcFilter" onchange="render()">
+      <option value="">All sources</option>
+      <option value="Built-in">Built-in Vim/Nvim</option>
+      <option value="Custom">Custom (keymaps.lua)</option>
+      <option value="Plugin">Plugin</option>
+    </select>
+    <select id="sortSel" onchange="setSortFromSelect()">
+      <option value="cat-asc">Category A→Z</option>
+      <option value="freq-asc">Frequency (Essential first)</option>
+      <option value="key-asc">Key A→Z</option>
+      <option value="mode-asc">Mode</option>
+      <option value="src-asc">Source</option>
+    </select>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('key')" id="h-key">Key <span class="arr" id="arr-key">↕</span></th>
+          <th onclick="sortBy('mode')" id="h-mode">Mode <span class="arr" id="arr-mode">↕</span></th>
+          <th onclick="sortBy('desc')" id="h-desc">Description <span class="arr" id="arr-desc">↕</span></th>
+          <th onclick="sortBy('cat')" id="h-cat">Category <span class="arr" id="arr-cat">↕</span></th>
+          <th onclick="sortBy('src')" id="h-src">Source <span class="arr" id="arr-src">↕</span></th>
+          <th onclick="sortBy('freq')" id="h-freq">Freq <span class="arr" id="arr-freq">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────────
+// Source: "Built-in" = core Vim/Nvim, "Custom" = your keymaps.lua, "Plugin" = plugin config
+// Freq: Essential / High / Medium / Low
+// Mode: n=normal, v=visual+select, x=visual-only, i=insert, c=command, nv=normal+visual
+
+const KM = [
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: MOTION — Built-in
+// ════════════════════════════════════════════════════════════════
+{key:'h',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Move cursor left'},
+{key:'j',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Move cursor down'},
+{key:'k',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Move cursor up'},
+{key:'l',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Move cursor right'},
+{key:'w',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Jump forward to start of next word'},
+{key:'b',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Jump backward to start of previous word'},
+{key:'e',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Jump forward to end of word'},
+{key:'ge',        mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Jump backward to end of previous word'},
+{key:'W',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Jump forward WORD (whitespace-delimited)'},
+{key:'B',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Jump backward WORD'},
+{key:'E',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Jump forward to end of WORD'},
+{key:'0',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Move to beginning of line'},
+{key:'^',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Move to first non-blank character of line'},
+{key:'$',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Move to end of line'},
+{key:'gg',        mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Go to first line of file'},
+{key:'G',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Go to last line of file'},
+{key:'{N}G',      mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Go to line N'},
+{key:'%',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Jump to matching bracket / delimiter'},
+{key:'f{c}',      mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Essential', desc:'Find char c forward on current line'},
+{key:'F{c}',      mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Find char c backward on current line'},
+{key:'t{c}',      mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Move till char c forward (before it)'},
+{key:'T{c}',      mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Move till char c backward'},
+{key:';',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Repeat last f/F/t/T forward'},
+{key:',',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Repeat last f/F/t/T backward'},
+{key:'H',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Move to top of visible screen'},
+{key:'M',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Low',       desc:'Move to middle of visible screen'},
+{key:'L',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Move to bottom of visible screen'},
+{key:'(',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Move to beginning of previous sentence'},
+{key:')',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Move to beginning of next sentence'},
+{key:'{',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Move to previous empty line / paragraph'},
+{key:'}',         mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Move to next empty line / paragraph'},
+{key:'<C-d>',     mode:'n',  cat:'Motion',    src:'Custom',    freq:'Essential', desc:'Scroll down half-page, cursor centered'},
+{key:'<C-u>',     mode:'n',  cat:'Motion',    src:'Custom',    freq:'Essential', desc:'Scroll up half-page, cursor centered'},
+{key:'<C-f>',     mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Scroll forward full page'},
+{key:'<C-b>',     mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Scroll backward full page'},
+{key:'<C-e>',     mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Scroll window down one line'},
+{key:'<C-y>',     mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Scroll window up one line'},
+{key:'zz',        mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Center cursor line on screen'},
+{key:'zt',        mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Scroll so cursor is at top of screen'},
+{key:'zb',        mode:'n',  cat:'Motion',    src:'Built-in',  freq:'Medium',    desc:'Scroll so cursor is at bottom of screen'},
+{key:'<C-o>',     mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Jump to previous location in jump list'},
+{key:'<C-i>',     mode:'n',  cat:'Motion',    src:'Built-in',  freq:'High',      desc:'Jump to next location in jump list'},
+{key:"'m",        mode:'n',  cat:'Marks',     src:'Built-in',  freq:'Medium',    desc:"Jump to line of mark 'm'"},
+{key:'`m',        mode:'n',  cat:'Marks',     src:'Built-in',  freq:'Medium',    desc:"Jump to exact position of mark 'm'"},
+{key:'mm',        mode:'n',  cat:'Marks',     src:'Built-in',  freq:'Medium',    desc:"Set mark 'm' at cursor"},
+{key:"''",        mode:'n',  cat:'Marks',     src:'Built-in',  freq:'Medium',    desc:'Jump back to previous position'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: EDITING — Built-in
+// ════════════════════════════════════════════════════════════════
+{key:'i',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'Essential', desc:'Enter insert mode before cursor'},
+{key:'I',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Enter insert mode at start of line'},
+{key:'a',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'Essential', desc:'Enter insert mode after cursor'},
+{key:'A',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Enter insert mode at end of line'},
+{key:'o',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'Essential', desc:'Open new line below and enter insert mode'},
+{key:'O',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Open new line above and enter insert mode'},
+{key:'s',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Delete character and enter insert mode'},
+{key:'S',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Delete entire line and enter insert mode'},
+{key:'C',         mode:'n',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Change from cursor to end of line'},
+{key:'<Esc>',     mode:'i',  cat:'Insert',    src:'Built-in',  freq:'Essential', desc:'Exit insert mode, return to normal'},
+{key:'<C-[>',     mode:'i',  cat:'Insert',    src:'Built-in',  freq:'Medium',    desc:'Exit insert mode (alternative to Esc)'},
+{key:'<C-o>',     mode:'i',  cat:'Insert',    src:'Built-in',  freq:'Medium',    desc:'Execute one normal command then return to insert'},
+{key:'<C-r>{r}',  mode:'i',  cat:'Insert',    src:'Built-in',  freq:'Medium',    desc:'Insert contents of register r in insert mode'},
+{key:'<C-w>',     mode:'i',  cat:'Insert',    src:'Built-in',  freq:'High',      desc:'Delete word before cursor in insert mode'},
+{key:'<C-u>',     mode:'i',  cat:'Insert',    src:'Built-in',  freq:'Medium',    desc:'Delete all text before cursor on line'},
+{key:'d',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Delete operator (d + motion, e.g. dw, dd)'},
+{key:'dd',        mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Delete entire current line'},
+{key:'D',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Delete from cursor to end of line'},
+{key:'c',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Change operator (c + motion, enters insert)'},
+{key:'cc',        mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Change entire current line'},
+{key:'r{c}',      mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Replace character under cursor with c'},
+{key:'R',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Medium',    desc:'Enter replace mode (overwrites characters)'},
+{key:'x',         mode:'n',  cat:'Text',      src:'Custom',    freq:'High',      desc:'Delete character without yanking to register'},
+{key:'X',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Medium',    desc:'Delete character before cursor'},
+{key:'y',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Yank operator (y + motion, e.g. yw, yy)'},
+{key:'yy',        mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Yank (copy) entire current line'},
+{key:'Y',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Yank to end of line'},
+{key:'p',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Paste after cursor'},
+{key:'P',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Paste before cursor'},
+{key:'p',         mode:'v',  cat:'Text',      src:'Custom',    freq:'High',      desc:'Paste without overwriting yank register'},
+{key:'u',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Undo last change'},
+{key:'<C-r>',     mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Redo last undone change'},
+{key:'.',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Essential', desc:'Repeat last change'},
+{key:'~',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Medium',    desc:'Toggle case of character under cursor'},
+{key:'gU{motion}',mode:'n',  cat:'Text',      src:'Built-in',  freq:'Medium',    desc:'Uppercase text covered by motion'},
+{key:'gu{motion}',mode:'n',  cat:'Text',      src:'Built-in',  freq:'Medium',    desc:'Lowercase text covered by motion'},
+{key:'>>',        mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Indent current line'},
+{key:'<<',        mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'De-indent current line'},
+{key:'>',         mode:'v',  cat:'Text',      src:'Custom',    freq:'High',      desc:'Indent selection, stay in visual mode'},
+{key:'<',         mode:'v',  cat:'Text',      src:'Custom',    freq:'High',      desc:'De-indent selection, stay in visual mode'},
+{key:'J',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'High',      desc:'Join current line with line below'},
+{key:'gJ',        mode:'n',  cat:'Text',      src:'Built-in',  freq:'Low',       desc:'Join lines without adding space'},
+{key:'=',         mode:'n',  cat:'Text',      src:'Built-in',  freq:'Medium',    desc:'Auto-indent with motion (== for current line)'},
+{key:'gww',       mode:'n',  cat:'Text',      src:'Built-in',  freq:'Low',       desc:'Format/reflow current line to textwidth'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: VISUAL MODE
+// ════════════════════════════════════════════════════════════════
+{key:'v',         mode:'n',  cat:'Visual',    src:'Built-in',  freq:'Essential', desc:'Enter characterwise visual mode'},
+{key:'V',         mode:'n',  cat:'Visual',    src:'Built-in',  freq:'Essential', desc:'Enter linewise visual mode'},
+{key:'<C-v>',     mode:'n',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Enter blockwise visual mode'},
+{key:'gv',        mode:'n',  cat:'Visual',    src:'Built-in',  freq:'Medium',    desc:'Reselect last visual selection'},
+{key:'o',         mode:'v',  cat:'Visual',    src:'Built-in',  freq:'Medium',    desc:'Move to other end of visual selection'},
+{key:'O',         mode:'v',  cat:'Visual',    src:'Built-in',  freq:'Low',       desc:'Move to other corner of block selection'},
+{key:'aw',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select a word (includes whitespace)'},
+{key:'iw',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select inner word (no whitespace)'},
+{key:'as',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'Medium',    desc:'Select a sentence'},
+{key:'ip',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'Medium',    desc:'Select inner paragraph'},
+{key:'i"',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select inside double quotes'},
+{key:"i'",        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select inside single quotes'},
+{key:'i(',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select inside parentheses'},
+{key:'i{',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select inside curly braces'},
+{key:'i[',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'High',      desc:'Select inside square brackets'},
+{key:'it',        mode:'v',  cat:'Visual',    src:'Built-in',  freq:'Medium',    desc:'Select inside HTML tag'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: SEARCH
+// ════════════════════════════════════════════════════════════════
+{key:'/',         mode:'n',  cat:'Search',    src:'Built-in',  freq:'Essential', desc:'Search forward (enter pattern)'},
+{key:'?',         mode:'n',  cat:'Search',    src:'Built-in',  freq:'High',      desc:'Search backward (enter pattern)'},
+{key:'n',         mode:'n',  cat:'Search',    src:'Custom',    freq:'Essential', desc:'Next match, cursor centered on screen'},
+{key:'N',         mode:'n',  cat:'Search',    src:'Custom',    freq:'Essential', desc:'Previous match, cursor centered'},
+{key:'*',         mode:'n',  cat:'Search',    src:'Built-in',  freq:'Essential', desc:'Search forward for word under cursor'},
+{key:'#',         mode:'n',  cat:'Search',    src:'Built-in',  freq:'High',      desc:'Search backward for word under cursor'},
+{key:'g*',        mode:'n',  cat:'Search',    src:'Built-in',  freq:'Medium',    desc:'Search forward for partial word under cursor'},
+{key:':noh',      mode:'c',  cat:'Search',    src:'Built-in',  freq:'High',      desc:'Clear search highlight (hlsearch off temporarily)'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: SUBSTITUTE / REPLACE
+// ════════════════════════════════════════════════════════════════
+{key:':%s/old/new/g',    mode:'c', cat:'Search', src:'Built-in', freq:'High',   desc:'Replace all occurrences in file'},
+{key:':s/old/new/g',     mode:'c', cat:'Search', src:'Built-in', freq:'High',   desc:'Replace all occurrences on current line'},
+{key:':%s/old/new/gc',   mode:'c', cat:'Search', src:'Built-in', freq:'Medium', desc:'Replace all, confirm each substitution'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: FILE / BUFFER — Built-in & Custom
+// ════════════════════════════════════════════════════════════════
+{key:'<C-s>',     mode:'n',  cat:'Buffer',    src:'Custom',    freq:'Essential', desc:'Save current file'},
+{key:'<leader>sn',mode:'n',  cat:'Buffer',    src:'Custom',    freq:'Medium',    desc:'Save without running auto-format (noautocmd)'},
+{key:'<C-q>',     mode:'n',  cat:'Buffer',    src:'Custom',    freq:'High',      desc:'Quit current window'},
+{key:':w',        mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'Essential', desc:'Write (save) current file'},
+{key:':q',        mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'Essential', desc:'Quit current window'},
+{key:':q!',       mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'High',      desc:'Quit without saving (force)'},
+{key:':wq',       mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'High',      desc:'Save and quit'},
+{key:':wqa',      mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'Medium',    desc:'Save and quit all windows'},
+{key:':e {file}', mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'High',      desc:'Open/edit a file'},
+{key:':bd',       mode:'c',  cat:'Buffer',    src:'Built-in',  freq:'High',      desc:'Delete (close) current buffer'},
+{key:'<Tab>',     mode:'n',  cat:'Buffer',    src:'Custom',    freq:'Essential', desc:'Go to next buffer'},
+{key:'<S-Tab>',   mode:'n',  cat:'Buffer',    src:'Custom',    freq:'Essential', desc:'Go to previous buffer'},
+{key:'<leader>x', mode:'n',  cat:'Buffer',    src:'Custom',    freq:'High',      desc:'Force close current buffer'},
+{key:'<leader>b', mode:'n',  cat:'Buffer',    src:'Custom',    freq:'Medium',    desc:'Open new empty buffer'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: WINDOWS
+// ════════════════════════════════════════════════════════════════
+{key:'<leader>v', mode:'n',  cat:'Window',    src:'Custom',    freq:'High',      desc:'Split window vertically (<C-w>v)'},
+{key:'<leader>h', mode:'n',  cat:'Window',    src:'Custom',    freq:'High',      desc:'Split window horizontally (<C-w>s)'},
+{key:'<leader>se',mode:'n',  cat:'Window',    src:'Custom',    freq:'Medium',    desc:'Equalize all split windows'},
+{key:'<leader>xs',mode:'n',  cat:'Window',    src:'Custom',    freq:'Medium',    desc:'Close current split window'},
+{key:'<C-k>',     mode:'n',  cat:'Window',    src:'Custom',    freq:'Essential', desc:'Focus window above (vim-tmux-navigator)'},
+{key:'<C-j>',     mode:'n',  cat:'Window',    src:'Custom',    freq:'Essential', desc:'Focus window below (vim-tmux-navigator)'},
+{key:'<C-h>',     mode:'n',  cat:'Window',    src:'Custom',    freq:'Essential', desc:'Focus window left (vim-tmux-navigator)'},
+{key:'<C-l>',     mode:'n',  cat:'Window',    src:'Custom',    freq:'Essential', desc:'Focus window right (vim-tmux-navigator)'},
+{key:'<Up>',      mode:'n',  cat:'Window',    src:'Custom',    freq:'Low',       desc:'Resize window: decrease height'},
+{key:'<Down>',    mode:'n',  cat:'Window',    src:'Custom',    freq:'Low',       desc:'Resize window: increase height'},
+{key:'<Left>',    mode:'n',  cat:'Window',    src:'Custom',    freq:'Low',       desc:'Resize window: decrease width'},
+{key:'<Right>',   mode:'n',  cat:'Window',    src:'Custom',    freq:'Low',       desc:'Resize window: increase width'},
+{key:'<C-w>w',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'High',      desc:'Cycle to next window'},
+{key:'<C-w>o',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'Medium',    desc:'Close all windows except current'},
+{key:'<C-w>=',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'Medium',    desc:'Equalize window sizes'},
+{key:'<C-w>|',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'Low',       desc:'Maximize current window width'},
+{key:'<C-w>_',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'Low',       desc:'Maximize current window height'},
+{key:'<C-w>r',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'Low',       desc:'Rotate windows clockwise'},
+{key:'<C-w>x',    mode:'n',  cat:'Window',    src:'Built-in',  freq:'Low',       desc:'Swap current window with next'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: TABS
+// ════════════════════════════════════════════════════════════════
+{key:'<leader>to',mode:'n',  cat:'Tab',       src:'Custom',    freq:'Low',       desc:'Open new tab'},
+{key:'<leader>tx',mode:'n',  cat:'Tab',       src:'Custom',    freq:'Low',       desc:'Close current tab'},
+{key:'<leader>tn',mode:'n',  cat:'Tab',       src:'Custom',    freq:'Low',       desc:'Go to next tab'},
+{key:'<leader>tp',mode:'n',  cat:'Tab',       src:'Custom',    freq:'Low',       desc:'Go to previous tab'},
+{key:':tabnew',   mode:'c',  cat:'Tab',       src:'Built-in',  freq:'Low',       desc:'Open new tab'},
+{key:':tabclose', mode:'c',  cat:'Tab',       src:'Built-in',  freq:'Low',       desc:'Close current tab'},
+{key:'gt',        mode:'n',  cat:'Tab',       src:'Built-in',  freq:'Low',       desc:'Go to next tab'},
+{key:'gT',        mode:'n',  cat:'Tab',       src:'Built-in',  freq:'Low',       desc:'Go to previous tab'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: FOLDS
+// ════════════════════════════════════════════════════════════════
+{key:'za',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'High',      desc:'Toggle fold under cursor'},
+{key:'zo',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'High',      desc:'Open fold under cursor'},
+{key:'zc',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'High',      desc:'Close fold under cursor'},
+{key:'zR',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'Medium',    desc:'Open all folds in file'},
+{key:'zM',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'Medium',    desc:'Close all folds in file'},
+{key:'zd',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'Low',       desc:'Delete fold under cursor'},
+{key:'[z',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'Low',       desc:'Move to start of open fold'},
+{key:']z',        mode:'n',  cat:'Fold',      src:'Built-in',  freq:'Low',       desc:'Move to end of open fold'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: REGISTERS & MACROS
+// ════════════════════════════════════════════════════════════════
+{key:'"{r}y',     mode:'n',  cat:'Register',  src:'Built-in',  freq:'High',      desc:'Yank into register r (e.g. "ay)'},
+{key:'"{r}p',     mode:'n',  cat:'Register',  src:'Built-in',  freq:'High',      desc:'Paste from register r (e.g. "ap)'},
+{key:':reg',      mode:'c',  cat:'Register',  src:'Built-in',  freq:'Medium',    desc:'Show contents of all registers'},
+{key:'"+y',       mode:'nv', cat:'Register',  src:'Built-in',  freq:'High',      desc:'Yank to system clipboard'},
+{key:'"+p',       mode:'n',  cat:'Register',  src:'Built-in',  freq:'High',      desc:'Paste from system clipboard'},
+{key:'q{r}',      mode:'n',  cat:'Macro',     src:'Built-in',  freq:'High',      desc:'Start recording macro into register r'},
+{key:'q',         mode:'n',  cat:'Macro',     src:'Built-in',  freq:'High',      desc:'Stop recording macro'},
+{key:'@{r}',      mode:'n',  cat:'Macro',     src:'Built-in',  freq:'High',      desc:'Play macro from register r'},
+{key:'@@',        mode:'n',  cat:'Macro',     src:'Built-in',  freq:'Medium',    desc:'Replay last played macro'},
+{key:'{N}@{r}',   mode:'n',  cat:'Macro',     src:'Built-in',  freq:'Medium',    desc:'Replay macro N times'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: COMMAND LINE
+// ════════════════════════════════════════════════════════════════
+{key:':',         mode:'n',  cat:'Cmdline',   src:'Built-in',  freq:'Essential', desc:'Enter command-line mode'},
+{key:'<Up>',      mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'High',      desc:'Previous command in history'},
+{key:'<Down>',    mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'High',      desc:'Next command in history'},
+{key:'<C-p>',     mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'Medium',    desc:'Previous command history match'},
+{key:'<C-n>',     mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'Medium',    desc:'Next command history match'},
+{key:'<Tab>',     mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'High',      desc:'Autocomplete command or path'},
+{key:'<C-r><C-w>',mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'High',      desc:'Insert word under cursor into command line'},
+{key:'q:',        mode:'n',  cat:'Cmdline',   src:'Built-in',  freq:'Medium',    desc:'Open command-line history window'},
+{key:'<C-c>',     mode:'c',  cat:'Cmdline',   src:'Built-in',  freq:'High',      desc:'Cancel / exit command-line mode'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: SPELL CHECK
+// ════════════════════════════════════════════════════════════════
+{key:']s',        mode:'n',  cat:'Spell',     src:'Built-in',  freq:'Low',       desc:'Jump to next misspelled word'},
+{key:'[s',        mode:'n',  cat:'Spell',     src:'Built-in',  freq:'Low',       desc:'Jump to previous misspelled word'},
+{key:'z=',        mode:'n',  cat:'Spell',     src:'Built-in',  freq:'Low',       desc:'Show spelling suggestions for word'},
+{key:'zg',        mode:'n',  cat:'Spell',     src:'Built-in',  freq:'Low',       desc:'Add word under cursor to spell dictionary'},
+{key:'zw',        mode:'n',  cat:'Spell',     src:'Built-in',  freq:'Low',       desc:'Mark word as misspelled'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: MISCELLANEOUS — Custom
+// ════════════════════════════════════════════════════════════════
+{key:'<leader>lw',mode:'n',  cat:'Misc',      src:'Custom',    freq:'Low',       desc:'Toggle line wrap'},
+{key:'<leader>bg',mode:'n',  cat:'Misc',      src:'Plugin',    freq:'Low',       desc:'Toggle background transparency (Nord theme)'},
+{key:'ga',        mode:'n',  cat:'Misc',      src:'Built-in',  freq:'Low',       desc:'Show ASCII / Unicode value of character'},
+{key:'g?',        mode:'n',  cat:'Misc',      src:'Built-in',  freq:'Low',       desc:'Rot13 encode motion'},
+{key:'<C-g>',     mode:'n',  cat:'Misc',      src:'Built-in',  freq:'Low',       desc:'Show current file name and cursor position'},
+{key:'K',         mode:'n',  cat:'Misc',      src:'Built-in',  freq:'Medium',    desc:'Show documentation for keyword under cursor'},
+{key:'gx',        mode:'n',  cat:'Misc',      src:'Built-in',  freq:'Medium',    desc:'Open URL or file under cursor'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: DIAGNOSTICS (Neovim built-in + custom)
+// ════════════════════════════════════════════════════════════════
+{key:'[d',        mode:'n',  cat:'Diagnostic', src:'Custom',   freq:'High',      desc:'Jump to previous diagnostic message'},
+{key:']d',        mode:'n',  cat:'Diagnostic', src:'Custom',   freq:'High',      desc:'Jump to next diagnostic message'},
+{key:'<leader>d', mode:'n',  cat:'Diagnostic', src:'Custom',   freq:'High',      desc:'Open floating diagnostic message'},
+{key:'<leader>q', mode:'n',  cat:'Diagnostic', src:'Custom',   freq:'Medium',    desc:'Send diagnostics to location list'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: LSP (lsp.lua)
+// ════════════════════════════════════════════════════════════════
+{key:'gd',        mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Essential', desc:'Go to definition (Telescope)'},
+{key:'gr',        mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Essential', desc:'List all references (Telescope)'},
+{key:'gI',        mode:'n',  cat:'LSP',       src:'Plugin',    freq:'High',      desc:'Go to implementation (Telescope)'},
+{key:'gD',        mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Medium',    desc:'Go to declaration (e.g. header file)'},
+{key:'<leader>D', mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Medium',    desc:'Jump to type definition (Telescope)'},
+{key:'<leader>ds',mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Medium',    desc:'Search document symbols (Telescope)'},
+{key:'<leader>ws',mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Medium',    desc:'Search workspace symbols (Telescope)'},
+{key:'<leader>rn',mode:'n',  cat:'LSP',       src:'Plugin',    freq:'High',      desc:'Rename symbol under cursor (all references)'},
+{key:'<leader>ca',mode:'nv', cat:'LSP',       src:'Plugin',    freq:'High',      desc:'Show code actions (normal and visual mode)'},
+{key:'<leader>th',mode:'n',  cat:'LSP',       src:'Plugin',    freq:'Low',       desc:'Toggle inlay hints'},
+{key:'K',         mode:'n',  cat:'LSP',       src:'Plugin',    freq:'High',      desc:'Show hover documentation for symbol'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: TELESCOPE (telescope.lua)
+// ════════════════════════════════════════════════════════════════
+{key:'<leader>sf',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Essential', desc:'Find files (fuzzy, hidden files included)'},
+{key:'<leader>sg',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Essential', desc:'Live grep across entire project'},
+{key:'<leader>sw',    mode:'n', cat:'Telescope', src:'Plugin', freq:'High',      desc:'Search word under cursor in project'},
+{key:'<leader><leader>',mode:'n',cat:'Telescope',src:'Plugin', freq:'Essential', desc:'Browse and switch between open buffers'},
+{key:'<leader>/',     mode:'n', cat:'Telescope', src:'Plugin', freq:'High',      desc:'Fuzzy search inside current buffer'},
+{key:'<leader>sh',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Medium',    desc:'Search Neovim help tags'},
+{key:'<leader>sk',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Low',       desc:'Search and list all keymaps'},
+{key:'<leader>ss',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Low',       desc:'Open Telescope built-in picker selector'},
+{key:'<leader>sd',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Medium',    desc:'Search diagnostics across workspace'},
+{key:'<leader>sr',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Medium',    desc:'Resume last Telescope search session'},
+{key:'<leader>s.',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Medium',    desc:'Browse recently opened files'},
+{key:'<leader>s/',    mode:'n', cat:'Telescope', src:'Plugin', freq:'Low',       desc:'Live grep in open buffers only'},
+// Telescope inside picker
+{key:'<C-k>',         mode:'i', cat:'Telescope', src:'Plugin', freq:'High',      desc:'[Telescope picker] Move to previous result'},
+{key:'<C-j>',         mode:'i', cat:'Telescope', src:'Plugin', freq:'High',      desc:'[Telescope picker] Move to next result'},
+{key:'<C-l>',         mode:'i', cat:'Telescope', src:'Plugin', freq:'High',      desc:'[Telescope picker] Open selected file'},
+{key:'<C-/>',         mode:'i', cat:'Telescope', src:'Plugin', freq:'Medium',    desc:'[Telescope picker] Show all keymaps for picker'},
+{key:'?',             mode:'n', cat:'Telescope', src:'Plugin', freq:'Medium',    desc:'[Telescope picker] Show all keymaps (normal mode)'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: NEO-TREE (neotree.lua)
+// ════════════════════════════════════════════════════════════════
+{key:'<leader>e',    mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Essential', desc:'Toggle file explorer panel (left)'},
+{key:'\\',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'High',      desc:'Reveal current file in Neo-tree'},
+{key:'<leader>ngs',  mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'Open floating git status panel'},
+// Inside Neo-tree
+{key:'<cr> / l',     mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Essential', desc:'[Neo-tree] Open selected file or expand node'},
+{key:'<space>',      mode:'n', cat:'Neo-tree', src:'Plugin', freq:'High',      desc:'[Neo-tree] Toggle expand/collapse node'},
+{key:'a',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'High',      desc:'[Neo-tree] Add new file'},
+{key:'A',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Add new directory'},
+{key:'d',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Delete file/directory'},
+{key:'r',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Rename file'},
+{key:'y',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Copy file to clipboard'},
+{key:'x',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Cut file to clipboard'},
+{key:'p',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Paste file from clipboard'},
+{key:'c',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Copy file to destination'},
+{key:'m',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Move file to destination'},
+{key:'q',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'High',      desc:'[Neo-tree] Close the Neo-tree window'},
+{key:'R',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Refresh tree'},
+{key:'H',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Toggle hidden/dotfiles'},
+{key:'/',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree] Fuzzy finder in tree'},
+{key:'P',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Toggle preview float'},
+{key:'S',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Open in horizontal split'},
+{key:'s',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Open in vertical split'},
+{key:'t',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Open in new tab'},
+{key:'i',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Show file details'},
+{key:'z',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Close all nodes'},
+{key:'[g / ]g',      mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Prev/next git modified file'},
+{key:'?',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree] Show help / keymaps'},
+// Git status panel
+{key:'ga',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree git] Stage file'},
+{key:'gu',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree git] Unstage file'},
+{key:'gr',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree git] Revert file'},
+{key:'gc',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree git] Commit staged changes'},
+{key:'gp',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Medium',    desc:'[Neo-tree git] Push commits'},
+{key:'gg',           mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree git] Commit and push'},
+{key:'A',            mode:'n', cat:'Neo-tree', src:'Plugin', freq:'Low',       desc:'[Neo-tree git] Stage all files'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: GIT — vim-fugitive
+// ════════════════════════════════════════════════════════════════
+{key:':G',        mode:'c', cat:'Git',        src:'Plugin',    freq:'High',      desc:'Open fugitive git status summary'},
+{key:':Gblame',   mode:'c', cat:'Git',        src:'Plugin',    freq:'Medium',    desc:'Toggle inline git blame'},
+{key:':Gdiff',    mode:'c', cat:'Git',        src:'Plugin',    freq:'Medium',    desc:'Show git diff for current file'},
+{key:':Glog',     mode:'c', cat:'Git',        src:'Plugin',    freq:'Low',       desc:'Show git log as quickfix list'},
+{key:':GBrowse',  mode:'c', cat:'Git',        src:'Plugin',    freq:'Low',       desc:'Open file in GitHub (vim-rhubarb)'},
+{key:']c',        mode:'n', cat:'Git',        src:'Plugin',    freq:'High',      desc:'[Gitsigns] Jump to next git hunk/change'},
+{key:'[c',        mode:'n', cat:'Git',        src:'Plugin',    freq:'High',      desc:'[Gitsigns] Jump to previous git hunk/change'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: COMPLETION — nvim-cmp (autocompletion.lua)
+// ════════════════════════════════════════════════════════════════
+{key:'<C-n>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Essential', desc:'Select next completion item'},
+{key:'<C-p>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Essential', desc:'Select previous completion item'},
+{key:'<C-y>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Essential', desc:'Confirm / accept selected completion'},
+{key:'<C-Space>', mode:'i', cat:'Completion', src:'Plugin',    freq:'High',      desc:'Manually trigger completion menu'},
+{key:'<C-b>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Low',       desc:'Scroll completion docs up'},
+{key:'<C-f>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Low',       desc:'Scroll completion docs down'},
+{key:'<Tab>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Essential', desc:'Next completion item or expand/jump snippet'},
+{key:'<S-Tab>',   mode:'i', cat:'Completion', src:'Plugin',    freq:'Essential', desc:'Previous completion item or jump back in snippet'},
+{key:'<C-l>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Medium',    desc:'Jump to next snippet placeholder'},
+{key:'<C-h>',     mode:'i', cat:'Completion', src:'Plugin',    freq:'Low',       desc:'Jump to previous snippet placeholder'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: COMMENT (comments.lua)
+// ════════════════════════════════════════════════════════════════
+{key:'<C-_>',     mode:'n', cat:'Comment',    src:'Plugin',    freq:'Essential', desc:'Toggle comment on current line'},
+{key:'<C-c>',     mode:'n', cat:'Comment',    src:'Plugin',    freq:'Essential', desc:'Toggle comment on current line (alias)'},
+{key:'<C-/>',     mode:'n', cat:'Comment',    src:'Plugin',    freq:'Essential', desc:'Toggle comment on current line (alias)'},
+{key:'<C-_>',     mode:'v', cat:'Comment',    src:'Plugin',    freq:'Essential', desc:'Toggle comment on visual selection'},
+{key:'<C-c>',     mode:'v', cat:'Comment',    src:'Plugin',    freq:'Essential', desc:'Toggle comment on selection (alias)'},
+{key:'<C-/>',     mode:'v', cat:'Comment',    src:'Plugin',    freq:'Essential', desc:'Toggle comment on selection (alias)'},
+{key:'gcc',       mode:'n', cat:'Comment',    src:'Plugin',    freq:'High',      desc:'Toggle comment for current line (motion)'},
+{key:'gc{motion}',mode:'n', cat:'Comment',    src:'Plugin',    freq:'High',      desc:'Toggle comment over motion (e.g. gc3j)'},
+{key:'gbc',       mode:'n', cat:'Comment',    src:'Plugin',    freq:'Low',       desc:'Toggle block comment for current line'},
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: MISC PLUGINS
+// ════════════════════════════════════════════════════════════════
+{key:':Mason',    mode:'c', cat:'LSP',        src:'Plugin',    freq:'Medium',    desc:'Open Mason LSP/tool installer UI'},
+{key:':Lazy',     mode:'c', cat:'Misc',       src:'Plugin',    freq:'Medium',    desc:'Open Lazy.nvim plugin manager'},
+{key:':TSUpdate', mode:'c', cat:'Misc',       src:'Plugin',    freq:'Low',       desc:'Update Treesitter parsers'},
+{key:':checkhealth', mode:'c', cat:'Misc',    src:'Built-in',  freq:'Medium',    desc:'Run health checks for Neovim and plugins'},
+{key:':lua =vim.version()', mode:'c', cat:'Misc', src:'Built-in', freq:'Low',   desc:'Print current Neovim version'},
+{key:':NullLsLog',mode:'c', cat:'Misc',       src:'Plugin',    freq:'Low',       desc:'Inspect none-ls / null-ls debug log'},
+
+];
+
+// ─── STATE ─────────────────────────────────────────────────────────────────────
+let sortCol = 'freq';
+let sortDir = 1;
+let activeCategory = '';
+
+const freqOrder = { Essential:0, High:1, Medium:2, Low:3 };
+
+const catClass = {
+  'Motion':     'cat-motion',
+  'Visual':     'cat-builtin',
+  'Insert':     'cat-insert',
+  'Text':       'cat-text',
+  'Search':     'cat-search',
+  'Buffer':     'cat-buffer',
+  'Window':     'cat-window',
+  'Tab':        'cat-tab',
+  'Fold':       'cat-fold',
+  'Marks':      'cat-marks',
+  'Register':   'cat-register',
+  'Macro':      'cat-macro',
+  'Cmdline':    'cat-cmdline',
+  'Spell':      'cat-spell',
+  'Diagnostic': 'cat-diagnostic',
+  'LSP':        'cat-lsp',
+  'Telescope':  'cat-telescope',
+  'Neo-tree':   'cat-neotree',
+  'Git':        'cat-git',
+  'Completion': 'cat-completion',
+  'Comment':    'cat-comment',
+  'Misc':       'cat-misc',
+};
+
+const modeClass = {
+  n:'mode-n', v:'mode-v', i:'mode-i', c:'mode-c', nv:'mode-nv', x:'mode-x', ni:'mode-ni'
+};
+const modeLabel = { n:'n', v:'v', i:'i', c:'c', nv:'n+v', x:'x', ni:'n+i' };
+
+// ─── SIDEBAR ───────────────────────────────────────────────────────────────────
+function buildSidebar() {
+  const cats = [...new Set(KM.map(k=>k.cat))];
+  const counts = {};
+  cats.forEach(c => counts[c] = KM.filter(k=>k.cat===c).length);
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = `<div class="sidebar-label">Category</div>
+    <div class="sidebar-item ${activeCategory===''?'active':''}" onclick="setCategory('')">
+      All <span class="sidebar-count">${KM.length}</span>
+    </div>` +
+    cats.map(c=>`
+    <div class="sidebar-item ${activeCategory===c?'active':''}" onclick="setCategory('${c}')">
+      <span>${c}</span> <span class="sidebar-count">${counts[c]}</span>
+    </div>`).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  buildSidebar();
+  render();
+}
+
+// ─── FILTER & SORT ─────────────────────────────────────────────────────────────
+function getFiltered() {
+  const q   = document.getElementById('search').value.toLowerCase();
+  const mf  = document.getElementById('modeFilter').value;
+  const ff  = document.getElementById('freqFilter').value;
+  const sf  = document.getElementById('srcFilter').value;
+
+  return KM.filter(k => {
+    if (activeCategory && k.cat !== activeCategory) return false;
+    if (q  && !(k.key.toLowerCase().includes(q) || k.desc.toLowerCase().includes(q) || k.cat.toLowerCase().includes(q))) return false;
+    if (mf && k.mode !== mf) return false;
+    if (ff && k.freq !== ff) return false;
+    if (sf && k.src !== sf) return false;
+    return true;
+  }).sort((a,b) => {
+    let av, bv;
+    if (sortCol === 'freq') { av = freqOrder[a.freq]; bv = freqOrder[b.freq]; }
+    else { av = (a[sortCol]||'').toLowerCase(); bv = (b[sortCol]||'').toLowerCase(); }
+    if (av < bv) return -sortDir;
+    if (av > bv) return sortDir;
+    return freqOrder[a.freq] - freqOrder[b.freq];
+  });
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  document.querySelectorAll('thead th').forEach(th => {
+    th.classList.remove('sorted');
+    const a = th.querySelector('.arr');
+    if (a) a.textContent = '↕';
+  });
+  const hdr = document.getElementById('h-' + col);
+  if (hdr) {
+    hdr.classList.add('sorted');
+    const a = hdr.querySelector('.arr');
+    if (a) a.textContent = sortDir === 1 ? '↑' : '↓';
+  }
+  render();
+}
+
+function setSortFromSelect() {
+  const v = document.getElementById('sortSel').value;
+  const [col] = v.split('-');
+  sortBy(col);
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('tbody');
+  document.getElementById('statCount').textContent = rows.length + ' / ' + KM.length + ' keymaps';
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">
+      <div class="em-icon">⌘</div>
+      No keymaps match your filters.</td></tr>`;
+    return;
+  }
+
+  const freqDotCls = { Essential:'freq-essential', High:'freq-high', Medium:'freq-medium', Low:'freq-low' };
+
+  tbody.innerHTML = rows.map(k => {
+    const cc  = catClass[k.cat]  || 'cat-misc';
+    const mc  = modeClass[k.mode]|| 'mode-n';
+    const ml  = modeLabel[k.mode]|| k.mode;
+    const fc  = freqDotCls[k.freq] || 'freq-low';
+    const sc  = k.src==='Custom'  ? 'source-custom'  :
+                k.src==='Plugin'  ? 'source-plugin'  : 'source-builtin';
+    const srcIcon = k.src==='Custom'  ? '✦ custom'  :
+                    k.src==='Plugin'  ? '⬡ plugin'  : '· built-in';
+    return `<tr>
+      <td><span class="key">${escHtml(k.key)}</span></td>
+      <td><span class="mode ${mc}">${ml}</span></td>
+      <td class="desc">${escHtml(k.desc)}</td>
+      <td><span class="badge ${cc}">${k.cat}</span></td>
+      <td class="${sc}">${srcIcon}</td>
+      <td><span class="freq ${fc}"><span class="freq-dot"></span>${k.freq}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────────
+buildSidebar();
+sortBy('freq');
+</script>
+</body>
+</html>
